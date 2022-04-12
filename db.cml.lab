@@ -1,0 +1,30 @@
+$TTL    604800
+@       IN      SOA     cml.lab. root.cml.lab. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+@       IN      NS      ps3-1.cml.lab.
+@       IN      A       10.133.100.10
+@       IN      AAAA    ::1
+ns      IN      A       10.133.100.10
+CS1-1   IN      A       10.11.100.10
+CS1-2   IN      A       10.12.100.10
+CS2-1   IN      A       10.21.100.10
+CS2-2   IN      A       10.22.100.10
+PS3-1   IN      A       10.133.100.10
+CR1-1   IN      A       10.255.255.1
+CR1-2   IN      A       10.255.255.2
+IR1-1   IN      A       10.255.255.3
+IR1-2   IN      A       10.255.255.4
+IR2-1   IN      A       10.255.255.5
+IR2-2   IN      A       10.255.255.6
+IR3-1   IN      A       10.255.255.7
+IR3-2   IN      A       10.255.255.8
+CR2-1   IN      A       10.255.255.9
+CR2-2   IN      A       10.255.255.10
+PR3-1   IN      A       10.255.255.11
+PR3-2   IN      A       10.255.255.12
+PR3-3   IN      A       10.255.255.13
+ER1-1   IN      A       10.255.255.14
