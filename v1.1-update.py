@@ -60,6 +60,26 @@ tn.write(b"exit\n")
 tn.write(b"exit\n")
 print("IR2-2 Gi0/0 updated\n")
 
+#Correct PR3-2 Gi0/4 config
+tn = telnetlib.Telnet("10.82.132.2")
+login()
+tn.read_until(b"#")
+tn.write(b"conf t\n")
+tn.read_until(b"(config)")
+tn.write(b"interface Gi0/3\n")
+tn.write(b" no description\n")
+tn.write(b" no ip address\n")
+tn.write(b" shut\n")
+tn.write(b"interface Gi0/4\n")
+tn.write(b" description PR3-2 gi0/3 to IR2-2 gi0/3\n")
+tn.write(b" ip address 10.72.132.2 255.255.255.0\n")
+tn.write(b" no shut\n")
+tn.write(b" no shut\n")
+tn.write(b"end\n")
+tn.write(b"wr\n")
+tn.write(b"exit\n")
+print("PR3-2 Gi0/4 updated\n")
+
 #Add Loopback interfaces
 
 tn = telnetlib.Telnet("10.11.12.1")
