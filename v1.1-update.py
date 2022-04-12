@@ -1,5 +1,11 @@
 import telnetlib
 
+try:
+    import paramiko
+except ModuleNotFoundError:
+    print("Error - Requires paramiko to be installed - pip install paramiko")
+    exit()
+
 def login():
     tn.read_until(b"Username: ")
     tn.write(b"cisco\n")
@@ -16,7 +22,45 @@ def finish():
     tn.write(b"end\n")
     tn.write(b"wr\n")
     tn.write(b"exit\n")
-    print(tn.read_all().decode('ascii'))
+
+#Update DNS records
+import paramiko
+ssh_client =paramiko.SSHClient()
+ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh_client.connect(hostname='10.133.100.10',username='cisco',password='cisco')
+stdin, stdout, stderr = ssh_client.exec_command("curl -Os https://raw.githubusercontent.com/mytechgnome/CML-TE-Lab/main/db.cml.lab")
+stdin, stdout, stderr = ssh_client.exec_command("sudo service bind9 stop")
+#stdin.write('cisco\n')
+stdin, stdout, stderr = ssh_client.exec_command("sudo mv db.cml.lab /etc/bind/db.cml.lab -f")
+stdin, stdout, stderr = ssh_client.exec_command("sudo service bind9 start")
+ssh_client.close()
+print("DNS updated\n")
+
+#Correct IR2-2 Gi0/0 IP address, and update BGP config
+
+tn = telnetlib.Telnet("10.81.82.1")
+login()
+tn.read_until(b"#")
+tn.write(b"telnet 10.72.81.1\n")
+login()
+tn.write(b"conf t\n")
+tn.write(b"interface gi0/0\n")
+tn.write(b"ip add 10.71.72.2 255.255.255.0\n")
+tn.write(b"router bgp 65012\n")
+tn.write(b"no neighbor 10.72.72.1 remote-as 65012\n")
+tn.write(b"neighbor 10.71.72.1 remote-as 65012\n")
+tn.write(b"address-family ipv4\n")
+tn.write(b"no network 10.72.72.0 mask 255.255.255.0\n")
+tn.write(b"no neighbor 10.72.72.1 activate\n")
+tn.write(b"network 10.71.72.0 mask 255.255.255.0\n")
+tn.write(b"neighbor 10.71.72.1 activate\n")
+tn.write(b"end\n")
+tn.write(b"wr\n")
+tn.write(b"exit\n")
+tn.write(b"exit\n")
+print("IR2-2 Gi0/0 updated\n")
+
+#Add Loopback interfaces
 
 tn = telnetlib.Telnet("10.11.12.1")
 login()
@@ -158,5 +202,6 @@ tn.write(b"address-family ipv4 unicast\n")
 tn.write(b"network 10.255.255.14 mask 255.255.255.255\n")
 finish()
 
+print("Loopbacks added\n")
 
-print("Update complete")
+print("Update complete\n")
