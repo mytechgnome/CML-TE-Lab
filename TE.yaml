@@ -1,0 +1,2078 @@
+lab:
+  description: |-
+    CML ThousandEyes Lab - Created by: Dan Kelcher
+    External addresses must be updated for the lab to function properly.  Search the YAML for !CHANGEME to update the IP addresses as needed
+    For information on this lab visit https://mytechgnome.blogspot.com/2022/04/thousandeyes-walkthrough-part-2-lab.html
+    For information on this project visit https://mytechgnome.blogspot.com/2022/03/thousandeyes-walkthrough-part-1-what.html
+    Twitter - @Ipswitch    https://twitter.com/Ipswitch
+    LinkedIn - https://www.linkedin.com/in/dkelcher/
+  notes: |-
+    CS1-2 and CS2-2 have Apache2 installed to serve simple webpages
+    PS3-1 is the DNS server for cml.lab, and uses 8.8.8.8 as a forwarder
+    Changelog
+    v1.1
+         - Corrected IR2-2 Gi0/0 IP address
+         - Added loopback addresses to routers and changed DNS to use loopback
+         - Updated DNS to use loopback
+  timestamp: 1646259014.7537024
+  title: ThousandEyes v1.1
+  version: 0.0.4
+nodes:
+  - id: n0
+    label: External
+    node_definition: external_connector
+    x: 0
+    y: -300
+    tags: []
+    configuration: bridge0
+    interfaces:
+      - id: i0
+        slot: 0
+        label: port
+        type: physical
+  - id: n1
+    label: CR1-1
+    node_definition: iosv
+    x: -200
+    y: -100
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname CR1-1
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.1 255.255.255.255
+      no sh
+      interface Gi0/0
+      description CR1-1 Gi0/0 to CR1-2 Gi0/0
+      ip add 10.11.12.1 255.255.255.0
+      no sh
+      interface gi0/1
+      description CR1-1 gi0/1 to ER1-1 gi0/1
+      ip add 10.11.100.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description CR1-1 gi0/3 to IR1-1 gi0/3
+      ip add 10.11.61.1 255.255.255.0
+      no sh
+      interface gi0/4
+      description CR1-1 gi0/4 to IR1-2 gi0/4
+      ip add 10.11.62.1 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65001
+      bgp router-id 1.1.1.11
+      bgp log-neighbor-changes
+      neighbor 10.11.12.2 remote-as 65001
+      neighbor 10.11.61.2 remote-as 65011
+      neighbor 10.11.62.2 remote-as 65011
+      address-family ipv4 unicast
+      neighbor 10.11.12.2 activate
+      neighbor 10.11.12.2 next-hop-self
+      neighbor 10.11.61.2 activate
+      neighbor 10.11.62.2 activate
+      network 10.255.255.1 mask 255.255.255.255
+      network 10.11.12.0 mask 255.255.255.0
+      network 10.11.100.0 mask 255.255.255.0
+      network 10.11.61.0 mask 255.255.255.0
+      network 10.11.62.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n2
+    label: CR1-2
+    node_definition: iosv
+    x: -200
+    y: 0
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname CR1-2
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.2 255.255.255.255
+      no sh
+      interface Gi0/0
+      description CR1-2 Gi0/0 to CR1-1 Gi0/0
+      ip add 10.11.12.2 255.255.255.0
+      no sh
+      interface gi0/1
+      description CR1-2 gi0/1 to ER1-1 gi0/1
+      ip add 10.12.100.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description CR1-2 gi0/3 to IR1-2 gi0/3
+      ip add 10.12.62.1 255.255.255.0
+      no sh
+      interface gi0/4
+      description CR1-2 gi0/4 to IR1-1 gi0/4
+      ip add 10.12.61.1 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65001
+      bgp router-id 1.1.1.12
+      bgp log-neighbor-changes
+      neighbor 10.11.12.1 remote-as 65001
+      neighbor 10.12.62.2 remote-as 65011
+      neighbor 10.12.61.2 remote-as 65011
+      address-family ipv4 unicast
+      neighbor 10.11.12.1 activate
+      neighbor 10.11.12.1 next-hop-self
+      neighbor 10.12.62.2 activate
+      neighbor 10.12.61.2 activate
+      network 10.255.255.2 mask 255.255.255.255
+      network 10.11.12.0 mask 255.255.255.0
+      network 10.12.100.0 mask 255.255.255.0
+      network 10.12.62.0 mask 255.255.255.0
+      network 10.12.61.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n3
+    label: IR1-1
+    node_definition: iosv
+    x: -100
+    y: -100
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname IR1-1
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.3 255.255.255.255
+      no sh
+      interface Gi0/0
+      description IR1-1 Gi0/0 to IR1-2 Gi0/0
+      ip add 10.61.62.1 255.255.255.0
+      no sh
+      interface gi0/1
+      description IR1-1 gi0/1 to IR2-1 gi0/1
+      ip add 10.61.71.1 255.255.255.0
+      no sh
+      interface gi0/2
+      description IR1-1 gi0/2 to IR2-2 gi0/2
+      ip add 10.61.72.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description IR1-1 gi0/3 to CR1-1 gi0/3
+      ip add 10.11.61.2 255.255.255.0
+      no sh
+      interface gi0/4
+      description IR1-1 gi0/4 to CR1-2 gi0/4
+      ip add 10.12.61.2 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65011
+      bgp router-id 1.1.1.61
+      bgp log-neighbor-changes
+      neighbor 10.61.62.2 remote-as 65011
+      neighbor 10.61.71.2 remote-as 65012
+      neighbor 10.61.72.2 remote-as 65012
+      neighbor 10.11.61.1 remote-as 65001
+      neighbor 10.12.61.1 remote-as 65001
+      address-family ipv4 unicast
+      neighbor 10.61.62.2 activate
+      neighbor 10.61.62.2 next-hop-self
+      neighbor 10.61.71.2 activate
+      neighbor 10.61.72.2 activate
+      neighbor 10.11.61.1 activate
+      neighbor 10.12.61.1 activate
+      network 10.255.255.3 mask 255.255.255.255
+      network 10.61.62.0 mask 255.255.255.0
+      network 10.61.71.0 mask 255.255.255.0
+      network 10.61.72.0 mask 255.255.255.0
+      network 10.11.61.0 mask 255.255.255.0
+      network 10.12.61.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n4
+    label: IR1-2
+    node_definition: iosv
+    x: -100
+    y: 0
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname IR1-2
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.4 255.255.255.255
+      no sh
+      interface Gi0/0
+      description IR1-2 Gi0/0 to IR1-1 Gi0/0
+      ip add 10.61.62.2 255.255.255.0
+      no sh
+      interface gi0/1
+      description IR1-2 gi0/1 to IR2-2 gi0/1
+      ip add 10.62.72.1 255.255.255.0
+      no sh
+      interface gi0/2
+      description IR1-2 gi0/2 to IR2-1 gi0/2
+      ip add 10.62.71.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description IR1-2 gi0/3 to CR1-2 gi0/3
+      ip add 10.12.62.2 255.255.255.0
+      no sh
+      interface gi0/4
+      description IR1-2 gi0/4 to CR1-1 gi0/4
+      ip add 10.11.62.2 255.255.255.0
+      no sh
+      interface gi0/5
+      description IR1-2 gi0/5 to PR3-1 gi0/5
+      ip add 10.62.131.1 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65011
+      bgp router-id 1.1.1.62
+      bgp log-neighbor-changes
+      neighbor 10.61.62.1 remote-as 65011
+      neighbor 10.62.72.2 remote-as 65012
+      neighbor 10.62.71.2 remote-as 65012
+      neighbor 10.12.62.1 remote-as 65001
+      neighbor 10.11.62.1 remote-as 65001
+      neighbor 10.62.131.2 remote-as 65023
+      address-family ipv4 unicast
+      neighbor 10.61.62.1 activate
+      neighbor 10.61.62.1 next-hop-self
+      neighbor 10.62.72.2 activate
+      neighbor 10.62.71.2 activate
+      neighbor 10.12.62.1 activate
+      neighbor 10.11.62.1 activate
+      neighbor 10.62.131.2 activate
+      network 10.255.255.4 mask 255.255.255.255
+      network 10.61.62.0 mask 255.255.255.0
+      network 10.62.72.0 mask 255.255.255.0
+      network 10.62.71.0 mask 255.255.255.0
+      network 10.12.62.0 mask 255.255.255.0
+      network 10.11.62.0 mask 255.255.255.0
+      network 10.62.131.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n5
+    label: IR2-1
+    node_definition: iosv
+    x: 0
+    y: -100
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname IR2-1
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.5 255.255.255.255
+      no sh
+      interface Gi0/0
+      description IR2-1 Gi0/0 to IR2-2 Gi0/0
+      ip add 10.71.72.1 255.255.255.0
+      no sh
+      interface gi0/1
+      description IR2-1 gi0/1 to IR1-1 gi0/1
+      ip add 10.61.71.2 255.255.255.0
+      no sh
+      interface gi0/2
+      description IR2-1 gi0/2 to IR1-2 gi0/2
+      ip add 10.62.71.2 255.255.255.0
+      no sh
+      interface gi0/3
+      description IR2-1 gi0/3 to CR1-2 gi0/3
+      ip add 10.71.161.1 255.255.255.0
+      no sh
+      interface gi0/5
+      description IR2-1 gi0/5 to IR3-1 gi0/5
+      ip add 10.71.81.1 255.255.255.0
+      no sh
+      interface gi0/6
+      description IR2-1 gi0/6 to CR2-2 gi0/6
+      ip add 10.71.82.1 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65012
+      bgp router-id 1.1.1.71
+      bgp log-neighbor-changes
+      neighbor 10.71.72.2 remote-as 65012
+      neighbor 10.61.71.1 remote-as 65011
+      neighbor 10.62.71.1 remote-as 65011
+      neighbor 10.71.161.2 remote-as 65031
+      neighbor 10.71.81.2 remote-as 65013
+      neighbor 10.71.82.2 remote-as 65013
+      address-family ipv4 unicast
+      neighbor 10.71.72.2 activate
+      neighbor 10.71.72.2 next-hop-self
+      neighbor 10.61.71.1 activate
+      neighbor 10.62.71.1 activate
+      neighbor 10.71.161.2 activate
+      neighbor 10.71.81.2 activate
+      neighbor 10.71.82.2 activate
+      network 10.255.255.5 mask 255.255.255.255
+      network 10.71.72.0 mask 255.255.255.0
+      network 10.61.71.0 mask 255.255.255.0
+      network 10.62.71.0 mask 255.255.255.0
+      network 10.71.161.0 mask 255.255.255.0
+      network 10.71.81.0 mask 255.255.255.0
+      network 10.71.82.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n6
+    label: IR2-2
+    node_definition: iosv
+    x: 0
+    y: 0
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname IR2-2
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.6 255.255.255.255
+      no sh
+      interface Gi0/0
+      description IR2-2 Gi0/0 to IR2-1 Gi0/0
+      ip add 10.71.72.2 255.255.255.0
+      no sh
+      interface gi0/1
+      description IR2-2 gi0/1 to IR1-2 gi0/1
+      ip add 10.62.72.2 255.255.255.0
+      no sh
+      interface gi0/2
+      description IR2-2 gi0/2 to IR1-1 gi0/2
+      ip add 10.61.72.2 255.255.255.0
+      no sh
+      interface gi0/3
+      description IR2-2 gi0/3 to PR3-1 gi0/3
+      ip add 10.72.131.1 255.255.255.0
+      no sh
+      interface gi0/4
+      description IR2-2 gi0/4 to PR3-2 gi0/4
+      ip add 10.72.132.1 255.255.255.0
+      no sh
+      interface gi0/5
+      description IR2-2 gi0/5 to CR2-2 gi0/5
+      ip add 10.72.82.1 255.255.255.0
+      no sh
+      interface gi0/6
+      description IR2-2 gi0/6 to IR3-1 gi0/6
+      ip add 10.72.81.1 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65012
+      bgp router-id 1.1.1.72
+      bgp log-neighbor-changes
+      neighbor 10.71.72.1 remote-as 65012
+      neighbor 10.62.72.1 remote-as 65011
+      neighbor 10.61.72.1 remote-as 65011
+      neighbor 10.72.131.2 remote-as 65023
+      neighbor 10.72.132.2 remote-as 65023
+      neighbor 10.72.82.2 remote-as 65013
+      neighbor 10.72.81.2 remote-as 65013
+      address-family ipv4 unicast
+      neighbor 10.71.72.1 activate
+      neighbor 10.71.72.1 next-hop-self
+      neighbor 10.62.72.1 activate
+      neighbor 10.61.72.1 activate
+      neighbor 10.72.131.2 activate
+      neighbor 10.72.132.2 activate
+      neighbor 10.72.82.2 activate
+      neighbor 10.72.81.2 activate
+      network 10.255.255.6 mask 255.255.255.255
+      network 10.71.72.0 mask 255.255.255.0
+      network 10.62.72.0 mask 255.255.255.0
+      network 10.61.72.0 mask 255.255.255.0
+      network 10.72.131.0 mask 255.255.255.0
+      network 10.72.132.0 mask 255.255.255.0
+      network 10.72.82.0 mask 255.255.255.0
+      network 10.72.81.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n7
+    label: IR3-1
+    node_definition: iosv
+    x: 100
+    y: -100
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname IR3-1
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.7 255.255.255.255
+      no sh
+      interface Gi0/0
+      description IR3-1 Gi0/0 to CR2-2 Gi0/0
+      ip add 10.81.82.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description IR3-1 gi0/3 to CR1-2 gi0/3
+      ip add 10.21.81.2 255.255.255.0
+      no sh
+      interface gi0/4
+      description IR3-1 gi0/4 to CR1-2 gi0/4
+      ip add 10.22.81.2 255.255.255.0
+      no sh
+      interface gi0/5
+      description IR3-1 gi0/5 to IR2-1 gi0/5
+      ip add 10.71.81.2 255.255.255.0
+      no sh
+      interface gi0/6
+      description IR3-1 gi0/6 to IR2-2 gi0/6
+      ip add 10.72.81.2 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65013
+      bgp router-id 1.1.1.81
+      bgp log-neighbor-changes
+      neighbor 10.81.82.2 remote-as 65013
+      neighbor 10.21.81.1 remote-as 65002
+      neighbor 10.22.81.1 remote-as 65002
+      neighbor 10.71.81.1 remote-as 65012
+      neighbor 10.72.81.1 remote-as 65012
+      address-family ipv4 unicast
+      neighbor 10.81.82.2 activate
+      neighbor 10.81.82.2 next-hop-self
+      neighbor 10.21.81.1 activate
+      neighbor 10.22.81.1 activate
+      neighbor 10.71.81.1 activate
+      neighbor 10.72.81.1 activate
+      network 10.255.255.7 mask 255.255.255.255
+      network 10.81.82.0 mask 255.255.255.0
+      network 10.21.81.0 mask 255.255.255.0
+      network 10.22.81.0 mask 255.255.255.0
+      network 10.71.81.0 mask 255.255.255.0
+      network 10.72.81.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n8
+    label: IR3-2
+    node_definition: iosv
+    x: 100
+    y: 0
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname IR3-2
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.8 255.255.255.255
+      no sh
+      interface Gi0/0
+      description IR3-2 Gi0/0 to IR3-1 Gi0/0
+      ip add 10.81.82.2 255.255.255.0
+      no sh
+      interface gi0/1
+      description IR3-2 gi0/1 to PR3-2 gi0/1
+      ip add 10.82.132.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description IR3-2 gi0/3 to CR1-2 gi0/3
+      ip add 10.22.82.2 255.255.255.0
+      no sh
+      interface gi0/4
+      description IR3-2 gi0/4 to CR1-2 gi0/4
+      ip add 10.21.82.2 255.255.255.0
+      no sh
+      interface gi0/5
+      description IR3-2 gi0/5 to IR2-2 gi0/5
+      ip add 10.72.82.2 255.255.255.0
+      no sh
+      interface gi0/6
+      description IR3-2 gi0/6 to IR2-1 gi0/6
+      ip add 10.71.82.2 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65013
+      bgp router-id 1.1.1.82
+      bgp log-neighbor-changes
+      neighbor 10.81.82.1 remote-as 65013
+      neighbor 10.82.132.2 remote-as 65023
+      neighbor 10.22.82.1 remote-as 65002
+      neighbor 10.21.82.1 remote-as 65002
+      neighbor 10.72.82.1 remote-as 65012
+      neighbor 10.71.82.1 remote-as 65012
+      address-family ipv4 unicast
+      neighbor 10.81.82.1 activate
+      neighbor 10.81.82.1 next-hop-self
+      neighbor 10.82.132.2 activate
+      neighbor 10.22.82.1 activate
+      neighbor 10.21.82.1 activate
+      neighbor 10.72.82.1 activate
+      neighbor 10.71.82.1 activate
+      network 10.255.255.8 mask 255.255.255.255
+      network 10.81.82.0 mask 255.255.255.0
+      network 10.82.132.0 mask 255.255.255.0
+      network 10.22.82.0 mask 255.255.255.0
+      network 10.21.82.0 mask 255.255.255.0
+      network 10.72.82.0 mask 255.255.255.0
+      network 10.71.82.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n9
+    label: CR2-1
+    node_definition: iosv
+    x: 200
+    y: -100
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname CR2-1
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.9 255.255.255.255
+      no sh
+      interface Gi0/0
+      description CR2-1 Gi0/0 to CR1-2 Gi0/0
+      ip add 10.21.22.1 255.255.255.0
+      no sh
+      interface gi0/1
+      description CR2-1 gi0/1 to ER1-1 gi0/1
+      ip add 10.21.100.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description CR2-1 gi0/3 to IR3-1 gi0/3
+      ip add 10.21.81.1 255.255.255.0
+      no sh
+      interface gi0/4
+      description CR2-1 gi0/4 to CR2-2 gi0/4
+      ip add 10.21.82.1 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65002
+      bgp router-id 1.1.1.21
+      bgp log-neighbor-changes
+      neighbor 10.21.22.2 remote-as 65002
+      neighbor 10.21.81.2 remote-as 65013
+      neighbor 10.21.82.2 remote-as 65013
+      address-family ipv4 unicast
+      neighbor 10.21.22.2 activate
+      neighbor 10.21.22.2 next-hop-self
+      neighbor 10.21.81.2 activate
+      neighbor 10.21.82.2 activate
+      network 10.255.255.9 mask 255.255.255.255
+      network 10.21.22.0 mask 255.255.255.0
+      network 10.21.100.0 mask 255.255.255.0
+      network 10.21.81.0 mask 255.255.255.0
+      network 10.21.82.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n10
+    label: CR2-2
+    node_definition: iosv
+    x: 200
+    y: 0
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname CR2-2
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.10 255.255.255.255
+      no sh
+      interface Gi0/0
+      description CR2-2 Gi0/0 to CR1-2 Gi0/0
+      ip add 10.21.22.2 255.255.255.0
+      no sh
+      interface gi0/1
+      description CR2-2 gi0/1 to ER1-1 gi0/1
+      ip add 10.22.100.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description CR2-2 gi0/3 to CR2-2 gi0/3
+      ip add 10.22.82.1 255.255.255.0
+      no sh
+      interface gi0/4
+      description CR2-2 gi0/4 to IR3-1 gi0/4
+      ip add 10.22.81.1 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65002
+      bgp router-id 1.1.1.22
+      bgp log-neighbor-changes
+      neighbor 10.21.22.1 remote-as 65002
+      neighbor 10.22.82.2 remote-as 65013
+      neighbor 10.22.81.2 remote-as 65013
+      address-family ipv4 unicast
+      neighbor 10.21.22.1 activate
+      neighbor 10.21.22.1 next-hop-self
+      neighbor 10.22.82.2 activate
+      neighbor 10.22.81.2 activate
+      network 10.255.255.10 mask 255.255.255.255
+      network 10.21.22.0 mask 255.255.255.0
+      network 10.22.100.0 mask 255.255.255.0
+      network 10.22.82.0 mask 255.255.255.0
+      network 10.22.81.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n11
+    label: PR3-1
+    node_definition: iosv
+    x: -50
+    y: 100
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname PR3-1
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.11 255.255.255.255
+      no sh
+      interface gi0/1
+      description PR3-1 gi0/1 to PR3-3 gi0/1
+      ip add 10.131.133.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description PR3-1 gi0/3 to IR2-2 gi0/3
+      ip add 10.72.131.2 255.255.255.0
+      no sh
+      interface gi0/5
+      description PR3-1 gi0/5 to IR1-2 gi0/5
+      ip add 10.62.131.2 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65023
+      bgp router-id 1.1.1.131
+      bgp log-neighbor-changes
+      neighbor 10.131.133.2 remote-as 65023
+      neighbor 10.72.131.1 remote-as 65012
+      neighbor 10.62.131.1 remote-as 65011
+      address-family ipv4 unicast
+      neighbor 10.131.133.2 activate
+      neighbor 10.131.133.2 next-hop-self
+      neighbor 10.72.131.1 activate
+      neighbor 10.62.131.1 activate
+      network 10.255.255.11 mask 255.255.255.255
+      network 10.131.133.0 mask 255.255.255.0
+      network 10.72.131.0 mask 255.255.255.0
+      network 10.62.131.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n12
+    label: PR3-2
+    node_definition: iosv
+    x: 50
+    y: 100
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname PR3-2
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.12 255.255.255.255
+      no sh
+      interface gi0/1
+      description PR3-2 gi0/1 to CR2-2 gi0/1
+      ip add 10.82.132.2 255.255.255.0
+      no sh
+      interface gi0/2
+      description PR3-2 gi0/2 to PR3-3 gi0/2
+      ip add 10.132.133.1 255.255.255.0
+      no sh
+      interface gi0/3
+      description PR3-2 gi0/3 to IR2-2 gi0/3
+      ip add 10.72.132.2 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65023
+      bgp router-id 1.1.1.132
+      bgp log-neighbor-changes
+      neighbor 10.82.132.1 remote-as 65013
+      neighbor 10.132.133.2 remote-as 65023
+      neighbor 10.72.132.1 remote-as 65012
+      address-family ipv4 unicast
+      neighbor 10.82.132.1 activate
+      neighbor 10.132.133.2 activate
+      neighbor 10.132.133.2 next-hop-self
+      neighbor 10.72.132.1 activate
+      network 10.255.255.12 mask 255.255.255.255
+      network 10.82.132.0 mask 255.255.255.0
+      network 10.132.133.0 mask 255.255.255.0
+      network 10.72.132.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n13
+    label: PR3-3
+    node_definition: iosv
+    x: 0
+    y: 200
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname PR3-3
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.13 255.255.255.255
+      no sh
+      interface Gi0/0
+      description PR3-3 Gi0/0 to ER1-1 Gi0/0
+      ip add 10.133.100.1 255.255.255.0
+      no sh
+      interface gi0/1
+      description PR3-3 gi0/1 to PR3-1 gi0/1
+      ip add 10.131.133.2 255.255.255.0
+      no sh
+      interface gi0/2
+      description PR3-3 gi0/2 to PR3-2 gi0/2
+      ip add 10.132.133.2 255.255.255.0
+      no sh
+      ip routing
+      router bgp 65023
+      bgp router-id 1.1.1.133
+      bgp log-neighbor-changes
+      neighbor 10.131.133.1 remote-as 65023
+      neighbor 10.132.133.1 remote-as 65023
+      address-family ipv4 unicast
+      neighbor 10.131.133.1 activate
+      neighbor 10.131.133.1 next-hop-self
+      neighbor 10.132.133.1 activate
+      neighbor 10.132.133.1 next-hop-self
+      network 10.255.255.13 mask 255.255.255.255
+      network 10.133.100.0 mask 255.255.255.0
+      network 10.131.133.0 mask 255.255.255.0
+      network 10.132.133.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n14
+    label: ER1-1
+    node_definition: iosv
+    x: 0
+    y: -200
+    tags: []
+    configuration: |-
+      ! IOS Config generated on 2022-03-04 15:51
+      ! by ank-ng
+      ! Config built by Dan Kelcher - @Ipswitch
+      hostname ER1-1
+      boot-start-marker
+      boot-end-marker
+      no aaa new-model
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      ip classless
+      ip subnet-zero
+      ip domain lookup
+      ip domain name cml.lab
+      ip name-server 10.133.100.10
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      int ran gi0/0 -7
+      sh
+      no ip add
+      interface Lo0
+      ip add 10.255.255.14 255.255.255.255
+      no sh
+      interface Gi0/0
+      description ER1-1 Gi0/0 to External
+      ip add 192.168.1.42 255.255.255.0 !CHANGEME
+      ip nat outside
+      no sh
+      interface gi0/3
+      description ER1-1 gi0/3 to IR2-1 gi0/3
+      ip add 10.71.161.2 255.255.255.0
+      ip nat inside
+      no sh
+      ip routing
+      router bgp 65031
+      bgp router-id 1.1.1.161
+      bgp log-neighbor-changes
+      neighbor 192.168.1.1 remote-as 
+      neighbor 10.71.161.1 remote-as 65012
+      address-family ipv4 unicast
+      neighbor 10.71.161.1 activate
+      neighbor 10.71.161.1 default-originate
+      network 10.255.255.14 mask 255.255.255.255
+      network 10.71.161.0 mask 255.255.255.0
+      cdp run
+      snmp-server community TE ro
+      ip nat inside source list 100 interface GigabitEthernet0/0 overload
+      ip route 0.0.0.0 0.0.0.0 192.168.1.1  !CHANGEME
+      access-list 100 deny ip 10.0.0.0 0.255.255.255 192.168.1.0 0.0.0.255 !CHANGEME
+      access-list 100 permit ip 10.0.0.0 0.255.255.255 any
+      end
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i3
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i4
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i5
+        slot: 4
+        label: GigabitEthernet0/4
+        type: physical
+      - id: i6
+        slot: 5
+        label: GigabitEthernet0/5
+        type: physical
+      - id: i7
+        slot: 6
+        label: GigabitEthernet0/6
+        type: physical
+      - id: i8
+        slot: 7
+        label: GigabitEthernet0/7
+        type: physical
+  - id: n15
+    label: CS1-1
+    node_definition: ubuntu
+    x: -300
+    y: -100
+    tags: []
+    configuration: |-
+      #cloud-config
+      # Config built by Dan Kelcher - @Ipswitch
+      hostname: CS1-1
+      manage_etc_hosts: True
+      system_info:
+        default_user:
+          name: cisco
+      password: cisco
+      chpasswd: { expire: False }
+      ssh_pwauth: True
+      ssh_authorized_keys:
+         - your-ssh-pubkey-line-goes-here
+      write_files:
+        - path: /etc/netplan/51-cloud-init_static.yaml
+          permissions: '0644'
+          content: |
+              network:
+                version: 2
+                ethernets:
+                  ens2:
+                      dhcp4: false
+                      addresses:
+                        - 10.11.100.10/24
+                      gateway4: 10.11.100.1
+                      nameservers:
+                          addresses: [10.133.100.10]
+                          search: [cml.lab]
+      runcmd:
+        - sudo netplan generate
+        - sudo netplan apply
+    interfaces:
+      - id: i0
+        slot: 0
+        label: ens3
+        type: physical
+  - id: n16
+    label: CS1-2
+    node_definition: ubuntu
+    x: -300
+    y: 0
+    tags: []
+    configuration: |-
+      #cloud-config
+      # Config built by Dan Kelcher - @Ipswitch
+      hostname: CS1-2
+      manage_etc_hosts: True
+      system_info:
+        default_user:
+          name: cisco
+      password: cisco
+      chpasswd: { expire: False }
+      ssh_pwauth: True
+      ssh_authorized_keys:
+         - your-ssh-pubkey-line-goes-here
+      write_files:
+        - path: /etc/netplan/51-cloud-init_static.yaml
+          permissions: '0644'
+          content: |
+              network:
+                version: 2
+                ethernets:
+                  ens2:
+                      dhcp4: false
+                      addresses:
+                        - 10.12.100.10/24
+                      gateway4: 10.12.100.1
+                      nameservers:
+                          addresses: [10.133.100.10]
+                          search: [cml.lab]
+      runcmd:
+        - sudo netplan generate
+        - sudo netplan apply
+        - sudo echo -e '#!/bin/bash\nup=0\nwhile [ $up -eq 0 ]\ndo\n    ping -c 1 google.com >  /dev/null && up=1 || up=0\n    echo "Waiting for connection"\n    sleep 15\ndone\nsudo apt-get update\nsudo apt install apache2 -y' > /usr/local/script.sh
+        - sudo chmod 777 /usr/local/script.sh
+        - [ bash, /usr/local/script.sh ]
+    interfaces:
+      - id: i0
+        slot: 0
+        label: ens3
+        type: physical
+  - id: n17
+    label: CS2-1
+    node_definition: ubuntu
+    x: 300
+    y: -100
+    tags: []
+    configuration: |-
+      #cloud-config
+      # Config built by Dan Kelcher - @Ipswitch
+      hostname: CS2-1
+      manage_etc_hosts: True
+      system_info:
+        default_user:
+          name: cisco
+      password: cisco
+      chpasswd: { expire: False }
+      ssh_pwauth: True
+      ssh_authorized_keys:
+         - your-ssh-pubkey-line-goes-here
+      write_files:
+        - path: /etc/netplan/51-cloud-init_static.yaml
+          permissions: '0644'
+          content: |
+              network:
+                version: 2
+                ethernets:
+                  ens2:
+                      dhcp4: false
+                      addresses:
+                        - 10.21.100.10/24
+                      gateway4: 10.21.100.1
+                      nameservers:
+                          addresses: [10.133.100.10]
+                          search: [cml.lab]
+      runcmd:
+        - sudo netplan generate
+        - sudo netplan apply
+    interfaces:
+      - id: i0
+        slot: 0
+        label: ens3
+        type: physical
+  - id: n18
+    label: CS2-2
+    node_definition: ubuntu
+    x: 300
+    y: 0
+    tags: []
+    configuration: |-
+      #cloud-config
+      # Config built by Dan Kelcher - @Ipswitch
+      hostname: CS2-2
+      manage_etc_hosts: True
+      system_info:
+        default_user:
+          name: cisco
+      password: cisco
+      chpasswd: { expire: False }
+      ssh_pwauth: True
+      ssh_authorized_keys:
+         - your-ssh-pubkey-line-goes-here
+      write_files:
+        - path: /etc/netplan/51-cloud-init_static.yaml
+          permissions: '0644'
+          content: |
+              network:
+                version: 2
+                ethernets:
+                  ens2:
+                      dhcp4: false
+                      addresses:
+                        - 10.22.100.10/24
+                      gateway4: 10.22.100.1
+                      nameservers:
+                          addresses: [10.133.100.10]
+                          search: [cml.lab]
+      runcmd:
+        - sudo netplan generate
+        - sudo netplan apply
+        - sudo echo -e '#!/bin/bash\nup=0\nwhile [ $up -eq 0 ]\ndo\n    ping -c 1 google.com >  /dev/null && up=1 || up=0\n    echo "Waiting for connection"\n    sleep 15\ndone\nsudo apt-get update\nsudo apt install apache2 -y' > /usr/local/script.sh
+        - sudo chmod 777 /usr/local/script.sh
+        - [ bash, /usr/local/script.sh ]
+    interfaces:
+      - id: i0
+        slot: 0
+        label: ens3
+        type: physical
+  - id: n19
+    label: PS3-1
+    node_definition: ubuntu
+    x: 0
+    y: 300
+    tags: []
+    configuration: |-
+      #cloud-config
+      # Config built by Dan Kelcher - @Ipswitch
+      hostname: PS3-1
+      manage_etc_hosts: True
+      system_info:
+        default_user:
+          name: cisco
+      password: cisco
+      chpasswd: { expire: False }
+      ssh_pwauth: True
+      ssh_authorized_keys:
+         - your-ssh-pubkey-line-goes-here
+      write_files:
+        - path: /etc/netplan/51-cloud-init_static.yaml
+          permissions: '0644'
+          content: |
+              network:
+                version: 2
+                ethernets:
+                  ens2:
+                      dhcp4: false
+                      addresses:
+                        - 10.133.100.10/24
+                      gateway4: 10.133.100.1
+                      nameservers:
+                          addresses: [10.133.100.10, 8.8.8.8]
+                          search: [cml.lab]
+        - path: /etc/bind/named.conf.options
+          permissions: '0644'
+          content: |
+              options {
+                      listen-on port 53 { any; };
+                      recursion yes;
+                      allow-query { any; };
+                      directory "/var/cache/bind";
+                      forwarders {
+                          8.8.8.8;
+                      };
+                      dnssec-validation auto;
+                      listen-on-v6 { any; };
+              };
+        - path: /etc/bind/named.conf.local
+          permissions: '0644'
+          content: |
+              zone "cml.lab" {
+                  type master;
+                  file "/etc/bind/db.cml.lab";
+              };
+        - path: /etc/bind/db.cml.lab
+          permissions: '0644'
+          content: |
+              $TTL    604800
+              @       IN      SOA     cml.lab. root.cml.lab. (
+                                            1         ; Serial
+                                       604800         ; Refresh
+                                        86400         ; Retry
+                                      2419200         ; Expire
+                                       604800 )       ; Negative Cache TTL
+              @       IN      NS      ps3-1.cml.lab.
+              @       IN      A       10.133.100.10
+              @       IN      AAAA    ::1
+              ns      IN      A       10.133.100.10
+      runcmd:
+        - sudo netplan generate
+        - sudo netplan apply
+        - sudo echo -e "CS1-1   IN      A       10.11.100.10\nCS1-2   IN      A       10.12.100.10\nCS2-1   IN      A       10.21.100.10\nCS2-2   IN      A       10.22.100.10\nPS3-1   IN      A       10.133.100.10" >> /etc/bind/db.cml.lab
+        - sudo echo -e "CR1-1   IN      A       10.255.255.1\nCR1-2   IN      A       10.255.255.2\nIR1-1   IN      A       10.255.255.3\nIR1-2   IN      A       10.255.255.4\nIR2-1   IN      A       10.255.255.5\nIR2-2   IN      A       10.255.255.6\nIR3-1   IN      A       10.255.255.7\nIR3-2   IN      A       10.255.255.8\nCR2-1   IN      A       10.255.255.9\nCR2-2   IN      A       10.255.255.10\nPR3-1   IN      A       10.255.255.11\nPR3-2   IN      A       10.255.255.12\nPR3-3   IN      A       10.255.255.13\nER1-1   IN      A       10.255.255.14" >> /etc/bind/db.cml.lab
+        - sudo echo -e '#!/bin/bash\nup=0\nwhile [ $up -eq 0 ]\ndo\n    ping -c 1 google.com >  /dev/null && up=1 || up=0\n    echo "Waiting for connection"\n    sleep 15\ndone\nsudo apt-get update\nsudo apt install -o Dpkg::Options::="--force-confold" bind9  -y' > /usr/local/script.sh
+        - sudo chmod 777 /usr/local/script.sh
+        - [ bash, /usr/local/script.sh ]
+    interfaces:
+      - id: i0
+        slot: 0
+        label: ens3
+        type: physical
+links:
+  - id: l0
+    i1: i1
+    n1: n1
+    i2: i1
+    n2: n2
+  - id: l1
+    i1: i2
+    n1: n1
+    i2: i0
+    n2: n15
+  - id: l2
+    i1: i4
+    n1: n1
+    i2: i4
+    n2: n3
+  - id: l3
+    i1: i5
+    n1: n1
+    i2: i5
+    n2: n4
+  - id: l4
+    i1: i2
+    n1: n2
+    i2: i0
+    n2: n16
+  - id: l5
+    i1: i4
+    n1: n2
+    i2: i4
+    n2: n4
+  - id: l6
+    i1: i5
+    n1: n2
+    i2: i5
+    n2: n3
+  - id: l7
+    i1: i1
+    n1: n3
+    i2: i1
+    n2: n4
+  - id: l8
+    i1: i2
+    n1: n3
+    i2: i2
+    n2: n5
+  - id: l9
+    i1: i3
+    n1: n3
+    i2: i3
+    n2: n6
+  - id: l10
+    i1: i2
+    n1: n4
+    i2: i2
+    n2: n6
+  - id: l11
+    i1: i3
+    n1: n4
+    i2: i3
+    n2: n5
+  - id: l12
+    i1: i6
+    n1: n4
+    i2: i6
+    n2: n11
+  - id: l13
+    i1: i1
+    n1: n5
+    i2: i1
+    n2: n6
+  - id: l14
+    i1: i4
+    n1: n5
+    i2: i4
+    n2: n14
+  - id: l15
+    i1: i6
+    n1: n5
+    i2: i6
+    n2: n7
+  - id: l16
+    i1: i7
+    n1: n5
+    i2: i7
+    n2: n8
+  - id: l17
+    i1: i4
+    n1: n6
+    i2: i4
+    n2: n11
+  - id: l18
+    i1: i5
+    n1: n6
+    i2: i5
+    n2: n12
+  - id: l19
+    i1: i6
+    n1: n6
+    i2: i6
+    n2: n8
+  - id: l20
+    i1: i7
+    n1: n6
+    i2: i7
+    n2: n7
+  - id: l21
+    i1: i1
+    n1: n7
+    i2: i1
+    n2: n8
+  - id: l22
+    i1: i2
+    n1: n8
+    i2: i2
+    n2: n12
+  - id: l23
+    i1: i1
+    n1: n9
+    i2: i1
+    n2: n10
+  - id: l24
+    i1: i2
+    n1: n9
+    i2: i0
+    n2: n17
+  - id: l25
+    i1: i4
+    n1: n9
+    i2: i4
+    n2: n7
+  - id: l26
+    i1: i5
+    n1: n9
+    i2: i5
+    n2: n8
+  - id: l27
+    i1: i2
+    n1: n10
+    i2: i0
+    n2: n18
+  - id: l28
+    i1: i4
+    n1: n10
+    i2: i4
+    n2: n8
+  - id: l29
+    i1: i5
+    n1: n10
+    i2: i5
+    n2: n7
+  - id: l30
+    i1: i2
+    n1: n11
+    i2: i2
+    n2: n13
+  - id: l31
+    i1: i3
+    n1: n12
+    i2: i3
+    n2: n13
+  - id: l32
+    i1: i1
+    n1: n13
+    i2: i0
+    n2: n19
+  - id: l33
+    i1: i1
+    n1: n14
+    i2: i0
+    n2: n0
