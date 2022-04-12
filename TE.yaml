@@ -1382,8 +1382,8 @@ nodes:
       description PR3-2 gi0/2 to PR3-3 gi0/2
       ip add 10.132.133.1 255.255.255.0
       no sh
-      interface gi0/3
-      description PR3-2 gi0/3 to IR2-2 gi0/3
+      interface gi0/4
+      description PR3-2 gi0/4 to IR2-2 gi0/4
       ip add 10.72.132.2 255.255.255.0
       no sh
       ip routing
